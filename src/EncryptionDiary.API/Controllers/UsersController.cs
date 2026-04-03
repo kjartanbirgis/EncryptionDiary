@@ -38,7 +38,8 @@ namespace EncryptionDiary.API.Controllers
                 PasswordSalt= salt,
                 PasswordIteration= iteration
             };
-            return Ok(await _userRepository.RegisterUser(registerUser));
+
+            return Ok(new UserResponse(await _userRepository.RegisterUser(registerUser)));
         }
         [HttpPost("login")]
         public async Task<IActionResult> LoginUser(AuthUser user)
@@ -63,7 +64,7 @@ namespace EncryptionDiary.API.Controllers
             if (!CryptographicOperations.FixedTimeEquals(hash,tempUser.PasswordHash)) {
                 return Unauthorized();
             }
-            return Ok();
+            return Ok(new UserResponse(tempUser));
         }
 
     }

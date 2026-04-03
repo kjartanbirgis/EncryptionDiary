@@ -8,7 +8,16 @@ namespace EncryptionDiary.Shared.Models
 {
     public class UserResponse
     {
-        public Guid Id { get; set; }
+        public UserResponse(User user)
+        {
+            ID = user.ID;
+            Username = user.Username;
+            Created = user.Created;
+            Updated = user.Updated;
+            Deleted = user.Deleted;
+        }
+
+        public Guid ID { get; set; }
         public string Username { get; set; }
         public DateTime Created { get; set; }
         public DateTime Updated { get; set; }
