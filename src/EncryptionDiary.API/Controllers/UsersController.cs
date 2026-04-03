@@ -20,18 +20,8 @@ namespace EncryptionDiary.API.Controllers
             _configuration = configuration;
         }
         
-        [HttpGet("{Username}")]
-        public async Task<IActionResult> GetUser(string username)
-        {
-            var user = await _userRepository.GetByUsername(username);
-            if (user == null)
-            {
-                return NotFound();
-            }
-            return Ok(user);
-        }
 
-        [HttpPost]
+        [HttpPost("register")]
         public async Task<IActionResult> RegisterUser(AuthUser user)
         {
             if (user == null) { return BadRequest(); }

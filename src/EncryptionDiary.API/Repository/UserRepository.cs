@@ -19,6 +19,7 @@ namespace EncryptionDiary.API.Repository
                 "SELECT id, username, password_hash, pw_salt, pw_iter, created, updated, deleted FROM users WHERE username = @username",
                 conn);
             cmd.Parameters.AddWithValue("username", username);
+            cmd.Connection = conn;
 
             using var reader = await cmd.ExecuteReaderAsync();
             if (await reader.ReadAsync())
@@ -48,6 +49,7 @@ namespace EncryptionDiary.API.Repository
             cmd.Parameters.AddWithValue("password_hash",user.PasswordHash);
             cmd.Parameters.AddWithValue("pw_salt", user.PasswordSalt);
             cmd.Parameters.AddWithValue("pw_iter",user.PasswordIteration);
+            cmd.Connection= conn;
             await cmd.ExecuteNonQueryAsync();
             
             return await GetByUsername(user.Username);
