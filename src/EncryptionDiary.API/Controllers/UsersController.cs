@@ -2,6 +2,7 @@
 using EncryptionDiary.Shared.Helper;
 using EncryptionDiary.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Cryptography;
 
 
 namespace EncryptionDiary.API.Controllers
@@ -31,7 +32,7 @@ namespace EncryptionDiary.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> RegisterUser(RegisterUser user)
+        public async Task<IActionResult> RegisterUser(AuthUser user)
         {
             if (user == null) { return BadRequest(); }
 
@@ -49,5 +50,31 @@ namespace EncryptionDiary.API.Controllers
             };
             return Ok(await _userRepository.RegisterUser(registerUser));
         }
+        [HttpPost("login")]
+        public async Task<IActionResult> LoginUser(AuthUser user)
+        {
+
+            var pepper = _configuration.GetValue<string>("PasswordSettings:Pepper");
+            var tempUser = await _userRepository.GetByUsername(user.Username);
+            if (tempUser == null)
+            {
+                /*
+                 * Hægum á ´kóðanum til að draga úr side attack timing
+                 */
+                var dummySalt = new byte[32];
+                var iteration = _configuration.GetValue<int>("PasswordSettings:Iterations");
+                var temphash = PasswordHelper.HashPassword(user.ClientHash, dummySalt, iteration, pepper);
+                _= CryptographicOperations.FixedTimeEquals(user.ClientHash, temphash);
+                return Unauthorized();
+            }
+
+            var hash = PasswordHelper.HashPassword(user.ClientHash, tempUser.PasswordSalt, tempUser.PasswordIteration, pepper);
+            
+            if (!CryptographicOperations.FixedTimeEquals(hash,tempUser.PasswordHash)) {
+                return Unauthorized();
+            }
+            return Ok();
+        }
+
     }
 }
