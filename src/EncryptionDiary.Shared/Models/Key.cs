@@ -9,6 +9,7 @@ namespace EncryptionDiary.Shared.Models
     public class Key
     {
         public Guid ID { get; set; }
+        public Guid UserID { get; set; }
         public byte[] EncKey { get; set; }
         public byte[] KeyNonce { get; set; }
         public byte[] KeyTag { get; set; }
