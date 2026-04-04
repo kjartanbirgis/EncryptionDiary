@@ -16,7 +16,7 @@ create table keys(
 	key_nonce bytea ,
 	key_tag bytea ,
 	description text,
-	sheared bool not null default false,
+	shared bool not null default false,
 	
 	created Timestamptz not null default now(),
 	updated timestamptz not null default now(),
