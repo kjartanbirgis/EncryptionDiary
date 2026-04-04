@@ -3,6 +3,8 @@ using Npgsql;
 using NpgsqlTypes;
 using EncryptionDiary.Shared.Models;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 
 
 namespace EncryptionDiary.API.Repository
@@ -57,8 +59,8 @@ namespace EncryptionDiary.API.Repository
             cmd.Parameters.AddWithValue("user_id", key.UserID);
             
             cmd.Parameters.AddWithValue("enc_key", NpgsqlDbType.Bytea ,key.EncKey!=null?(object)key.EncKey:DBNull.Value);
-            cmd.Parameters.AddWithValue("enc_nonce", NpgsqlDbType.Bytea, key.KeyNonce != null ? (object)key.KeyNonce : DBNull.Value);
-            cmd.Parameters.AddWithValue("enc_tag", NpgsqlDbType.Bytea, key.KeyTag != null ? (object)key.KeyTag : DBNull.Value);
+            cmd.Parameters.AddWithValue("key_nonce", NpgsqlDbType.Bytea, key.KeyNonce != null ? (object)key.KeyNonce : DBNull.Value);
+            cmd.Parameters.AddWithValue("key_tag", NpgsqlDbType.Bytea, key.KeyTag != null ? (object)key.KeyTag : DBNull.Value);
             
             cmd.Parameters.AddWithValue("description",NpgsqlDbType.Varchar, key.Description!= null? (object)key.Description:DBNull.Value);
             cmd.Parameters.AddWithValue("shared", NpgsqlDbType.Boolean, key.Shared != null? (object)key.Shared:DBNull.Value);
@@ -69,20 +71,20 @@ namespace EncryptionDiary.API.Repository
 
             cmd.Connection = conn;
             var keyID = await cmd.ExecuteScalarAsync();
-            if(keyID != DBNull.Value)
+            if(keyID == null||keyID == DBNull.Value)
             { return null; }
 
             return await GetKeyByID((Guid)keyID);
 
         }
 
-        private async Task<Key?> GetKeyByID(Guid keyID)
+        public async Task<Key?> GetKeyByID(Guid keyID)
         {
             using var conn = new NpgsqlConnection(_connectionString);
             await conn.OpenAsync();
             List<Key> keys = new List<Key>();
             using var cmd = new NpgsqlCommand(
-                "SELECT id, user_id, enc_key, key_nonce, key_tag, description, shared, created, updated, deleted FROM keys WHERE id = @id",
+                "SELECT id, enc_key, key_nonce, key_tag, description, shared, created, updated, deleted FROM keys WHERE id = @id",
                 conn);
             cmd.Parameters.AddWithValue("id", keyID);
             cmd.Connection = conn;
@@ -106,13 +108,33 @@ namespace EncryptionDiary.API.Repository
             return null;
         }
 
-        private async Task<Key?> ModifyKeyByID(Key key)
+        public async Task SoftDeleteKeyByID(Key key)
         {
-            if (key.ID == null) { return null; }
+            if(key== null ||key.ID == null)
+            { throw new ArgumentNullException("Key.ID má ekki vera null hérna"); }
+            using var connn = new NpgsqlConnection(_connectionString);
+            await connn.OpenAsync();
+            using var cmd = new NpgsqlCommand("update keys set " +
+                                                    "enc_key = null, " +
+                                                    "key_nonce = null, " +
+                                                    "key_tag = null," +
+                                                    "description =  null, " +
+                                                    "shared = null, " +
+                                                    "deleted = @deleted "+
+                                                "where id = @id");
+            cmd.Connection = connn;
+            cmd.Parameters.AddWithValue("id", key.ID);
+            cmd.Parameters.AddWithValue("deleted", DateTime.Now);
+            await cmd.ExecuteNonQueryAsync();
+
+        }
+
+        public async Task<Key?> ModifyKeyByID(Key key)
+        {
+            if (key.ID == null || key == null) { return null; }
             using var conn = new NpgsqlConnection(_connectionString);
             await conn.OpenAsync();
             using var cmd = new NpgsqlCommand("update keys set " +
-                                                    "user_id = @user_id, " +
                                                     "enc_key = @enc_key, " +
                                                     "key_nonce = @key_nonce, " +
                                                     "key_tag = @key_tag," +
@@ -123,7 +145,6 @@ namespace EncryptionDiary.API.Repository
 
             cmd.Parameters.Clear();
             cmd.Parameters.AddWithValue("id", NpgsqlDbType.Uuid, key.ID.Value );
-            cmd.Parameters.AddWithValue("user_id", key.UserID);
 
             cmd.Parameters.AddWithValue("enc_key", NpgsqlDbType.Bytea, key.EncKey != null ? (object)key.EncKey : DBNull.Value);
             cmd.Parameters.AddWithValue("key_nonce", NpgsqlDbType.Bytea, key.KeyNonce != null ? (object)key.KeyNonce : DBNull.Value);
@@ -141,8 +162,7 @@ namespace EncryptionDiary.API.Repository
             return await GetKeyByID(key.ID.Value);
         }
 
-        private void SoftDeleteKeyByID(Key KeyID) { 
-        }
+
 
     }
 }
