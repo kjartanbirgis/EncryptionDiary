@@ -11,6 +11,8 @@ builder.Services.AddSwaggerGen();
 
 var connectionString = builder.Configuration.GetConnectionString("DiaryDb");
 builder.Services.AddScoped<UserRepository>(provider => new UserRepository(connectionString));
+builder.Services.AddScoped<KeyRepository>(provider => new KeyRepository(connectionString));
+builder.Services.AddScoped<DiaryRepository>(provider => new DiaryRepository(connectionString));
 
 var app = builder.Build();
 
