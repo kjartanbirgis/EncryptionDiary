@@ -1,4 +1,7 @@
 ﻿using EncryptionDiary.Shared.Models;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using Npgsql;
+using NpgsqlTypes;
 
 namespace EncryptionDiary.API.Repository
 {
@@ -8,21 +11,135 @@ namespace EncryptionDiary.API.Repository
         {
         }
 
-        public async Task<List<Diary>> GetAllDiary(Guid UserID)
+        public async Task<List<Diary>> GetAllDiary(Guid userID)
         {
-            throw new NotImplementedException();
+            using var conn = new NpgsqlConnection(_connectionString);
+            await conn.OpenAsync();
+            List<Diary> diaries = new List<Diary>();
+            using var cmd = new NpgsqlCommand(
+                "SELECT id, user_id, enc_diary_data, diary_nonce, diary_tag, created, updated, deleted FROM keys WHERE user_id = @user_id",
+                conn);
+            cmd.Parameters.AddWithValue("user_id", userID);
+            cmd.Connection = conn;
+
+            using var reader = await cmd.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                var tmpDiary = new Diary
+                {
+                    ID = reader.GetGuid(0),
+                    UserID = reader.GetGuid(1),
+                    EncDiaryData = (byte[])reader[2],
+                    DiaryNonce = (byte[])reader[3],
+                    DiaryTag = (byte[])reader[4],
+
+                    Created = reader.GetDateTime(7),
+                    Updated = reader.GetDateTime(8),
+                    Deleted = reader.IsDBNull(9) ? null : reader.GetDateTime(9)
+                };
+                diaries.Add(tmpDiary);
+            }
+            return diaries;
         }
+       
+        //þurfum að passa að eyða assests á undan 
         public async Task SoftDeleteDiary(Guid diaryID)
         {
-            throw new NotImplementedException();
+
+            using var connn = new NpgsqlConnection(_connectionString);
+            await connn.OpenAsync();
+            using var cmd = new NpgsqlCommand("update diary set " +
+                                                    "enc_diary_data = null, " +
+                                                    "diary_nonce = null, " +
+                                                    "diary_tag = null," +
+                                                    "deleted = @deleted " +
+                                                "where id = @id");
+            cmd.Connection = connn;
+            cmd.Parameters.AddWithValue("id", diaryID);
+            cmd.Parameters.AddWithValue("deleted", DateTime.Now);
+            await cmd.ExecuteNonQueryAsync();
         }
-        public async Task<Diary> InsertDiary(Diary diary)
+        public async Task<Diary?> InsertDiary(Diary diary)
         {
-            throw new NotImplementedException();
+            using var conn = new NpgsqlConnection(_connectionString);
+            await conn.OpenAsync();
+            using var cmd = new NpgsqlCommand("insert into diary(id,user_id,enc_key,key_nonce,key_tag,description,shared,created,updated,deleted) " +
+                                                "values(@id, @user_id, @enc_key, @key_nonce, @key_tag, @description, @shared, @created, @updated, @deleted) returning id");
+            cmd.Parameters.Clear();
+            cmd.Parameters.AddWithValue("id", NpgsqlDbType.Uuid, diary.ID != null ? (object)diary.ID : DBNull.Value);
+            cmd.Parameters.AddWithValue("user_id", diary.UserID);
+
+            cmd.Parameters.AddWithValue("enc_diary_data", NpgsqlDbType.Bytea, diary.EncDiaryData != null ? (object)diary.EncDiaryData : DBNull.Value);
+            cmd.Parameters.AddWithValue("diary_nonce", NpgsqlDbType.Bytea, diary.DiaryNonce != null ? (object)diary.DiaryNonce : DBNull.Value);
+            cmd.Parameters.AddWithValue("diary_tag", NpgsqlDbType.Bytea, diary.DiaryTag != null ? (object)diary.DiaryTag : DBNull.Value);
+
+
+            cmd.Parameters.AddWithValue("created", NpgsqlDbType.TimestampTz, diary.Created != null ? (object)diary.Created : DBNull.Value);
+            cmd.Parameters.AddWithValue("updated", NpgsqlDbType.TimestampTz, diary.Updated != null ? (object)diary.Updated : DBNull.Value);
+            cmd.Parameters.AddWithValue("deleted", NpgsqlDbType.TimestampTz, diary.Deleted != null ? (object)diary.Deleted : DBNull.Value);
+
+            cmd.Connection = conn;
+            var keyID = await cmd.ExecuteScalarAsync();
+            if (keyID == null || keyID == DBNull.Value)
+            { return null; }
+
+            return await GetDiaryByID((Guid)keyID);
         }
-        public async Task<Diary> ModifyDiary(Diary diary)
+        
+        public async Task<Diary?> ModifyDiary(Diary diary)
         {
-            throw new NotImplementedException();
+            if (diary == null || diary.ID == null ) { return null; }
+            using var conn = new NpgsqlConnection(_connectionString);
+            await conn.OpenAsync();
+            using var cmd = new NpgsqlCommand("update diary set " +
+                                                    "enc_diary_data = @enc_diary_data, " +
+                                                    "diary_nonce = @diary_nonce, " +
+                                                    "diary_tag = @diary_tag," +
+                                                    "updated = @updated" +
+                                                "where id = @id");
+
+            cmd.Parameters.Clear();
+            cmd.Parameters.AddWithValue("id", NpgsqlDbType.Uuid, diary.ID.Value);
+
+            cmd.Parameters.AddWithValue("enc_diary_data", NpgsqlDbType.Bytea, diary.EncDiaryData != null ? (object)diary.EncDiaryData : DBNull.Value);
+            cmd.Parameters.AddWithValue("diary_nonce", NpgsqlDbType.Bytea, diary.DiaryNonce != null ? (object)diary.DiaryNonce : DBNull.Value);
+            cmd.Parameters.AddWithValue("diary_tag", NpgsqlDbType.Bytea, diary.DiaryTag != null ? (object)diary.DiaryTag : DBNull.Value);
+
+            cmd.Parameters.AddWithValue("updated", NpgsqlDbType.TimestampTz, diary.Updated != null ? (object)diary.Updated : DBNull.Value);
+
+
+            cmd.Connection = conn;
+            await cmd.ExecuteNonQueryAsync();
+
+            return await GetDiaryByID(diary.ID.Value);
+        }
+        //spurning um að vera með líka filter á noandum en ekki bara Guid á dagbókarfærslunni!!!
+        public async Task<Diary?> GetDiaryByID(Guid diaryID)
+        {
+            using var conn = new NpgsqlConnection(_connectionString);
+            await conn.OpenAsync();
+            List<Key> keys = new List<Key>();
+            using var cmd = new NpgsqlCommand(
+                "SELECT id, enc_diary_data, diary_nonce, diary_tag, created, updated, deleted FROM keys WHERE id = @id",
+                conn);
+            cmd.Parameters.AddWithValue("id", diaryID);
+            cmd.Connection = conn;
+
+            using var reader = await cmd.ExecuteReaderAsync();
+            if (await reader.ReadAsync())
+            {
+                return new Diary
+                {
+                    ID = reader.GetGuid(0),
+                    EncDiaryData = (byte[])reader[1],
+                    DiaryNonce = (byte[])reader[2],
+                    DiaryTag = (byte[])reader[3],
+                    Created = reader.GetDateTime(4),
+                    Updated = reader.GetDateTime(5),
+                    Deleted = reader.IsDBNull(6) ? null : reader.GetDateTime(6)
+                };
+            }
+            return null;
         }
     }
 }
