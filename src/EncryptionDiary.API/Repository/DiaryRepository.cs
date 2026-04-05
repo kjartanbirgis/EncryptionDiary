@@ -56,7 +56,7 @@ namespace EncryptionDiary.API.Repository
                                                 "where id = @id");
             cmd.Connection = connn;
             cmd.Parameters.AddWithValue("id", diaryID);
-            cmd.Parameters.AddWithValue("deleted", DateTime.Now);
+            cmd.Parameters.AddWithValue("deleted", DateTime.UtcNow);
             await cmd.ExecuteNonQueryAsync();
         }
         public async Task<Diary?> InsertDiary(Diary diary)
@@ -74,8 +74,8 @@ namespace EncryptionDiary.API.Repository
             cmd.Parameters.AddWithValue("diary_tag", NpgsqlDbType.Bytea, diary.DiaryTag != null ? (object)diary.DiaryTag : DBNull.Value);
 
 
-            cmd.Parameters.AddWithValue("created", NpgsqlDbType.TimestampTz, diary.Created != null ? (object)diary.Created : DBNull.Value);
-            cmd.Parameters.AddWithValue("updated", NpgsqlDbType.TimestampTz, diary.Updated != null ? (object)diary.Updated : DBNull.Value);
+            cmd.Parameters.AddWithValue("created", NpgsqlDbType.TimestampTz, diary.Created != null ? diary.Created :DateTime.UtcNow);
+            cmd.Parameters.AddWithValue("updated", NpgsqlDbType.TimestampTz, diary.Updated != null ? diary.Updated : DateTime.UtcNow);
             cmd.Parameters.AddWithValue("deleted", NpgsqlDbType.TimestampTz, diary.Deleted != null ? (object)diary.Deleted : DBNull.Value);
 
             cmd.Connection = conn;

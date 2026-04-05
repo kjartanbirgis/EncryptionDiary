@@ -55,7 +55,7 @@ namespace EncryptionDiary.API.Repository
             using var cmd = new NpgsqlCommand("insert into keys(id,user_id,enc_key,key_nonce,key_tag,description,shared,created,updated,deleted) "+
                                                 "values(@id, @user_id, @enc_key, @key_nonce, @key_tag, @description, @shared, @created, @updated, @deleted) returning id");
             cmd.Parameters.Clear();
-            cmd.Parameters.AddWithValue("id", NpgsqlDbType.Uuid, key.ID!=null?(object)key.ID:DBNull.Value);
+            cmd.Parameters.AddWithValue("id", NpgsqlDbType.Uuid, key.ID != null ? key.ID : Guid.NewGuid());
             cmd.Parameters.AddWithValue("user_id", key.UserID);
             
             cmd.Parameters.AddWithValue("enc_key", NpgsqlDbType.Bytea ,key.EncKey!=null?(object)key.EncKey:DBNull.Value);
@@ -65,8 +65,8 @@ namespace EncryptionDiary.API.Repository
             cmd.Parameters.AddWithValue("description",NpgsqlDbType.Varchar, key.Description!= null? (object)key.Description:DBNull.Value);
             cmd.Parameters.AddWithValue("shared", NpgsqlDbType.Boolean, key.Shared != null? (object)key.Shared:DBNull.Value);
             
-            cmd.Parameters.AddWithValue("created", NpgsqlDbType.TimestampTz, key.Created != null ? (object)key.Created : DBNull.Value);
-            cmd.Parameters.AddWithValue("updated", NpgsqlDbType.TimestampTz, key.Updated != null ? (object)key.Updated : DBNull.Value);
+            cmd.Parameters.AddWithValue("created", NpgsqlDbType.TimestampTz, key.Created != null ? key.Created : DateTime.UtcNow);
+            cmd.Parameters.AddWithValue("updated", NpgsqlDbType.TimestampTz, key.Updated != null ? key.Updated : DateTime.UtcNow);
             cmd.Parameters.AddWithValue("deleted", NpgsqlDbType.TimestampTz, key.Deleted != null ? (object)key.Deleted : DBNull.Value);
 
             cmd.Connection = conn;
@@ -108,10 +108,9 @@ namespace EncryptionDiary.API.Repository
             return null;
         }
 
-        public async Task SoftDeleteKeyByID(Key key)
+        public async Task<bool> SoftDeleteKeyByID(Guid keyID)
         {
-            if(key== null ||key.ID == null)
-            { throw new ArgumentNullException("Key.ID má ekki vera null hérna"); }
+
             using var connn = new NpgsqlConnection(_connectionString);
             await connn.OpenAsync();
             using var cmd = new NpgsqlCommand("update keys set " +
@@ -123,9 +122,10 @@ namespace EncryptionDiary.API.Repository
                                                     "deleted = @deleted "+
                                                 "where id = @id");
             cmd.Connection = connn;
-            cmd.Parameters.AddWithValue("id", key.ID);
-            cmd.Parameters.AddWithValue("deleted", DateTime.Now);
-            await cmd.ExecuteNonQueryAsync();
+            cmd.Parameters.AddWithValue("id", keyID);
+            cmd.Parameters.AddWithValue("deleted", DateTime.UtcNow);
+            var rows= await cmd.ExecuteNonQueryAsync();
+            return rows >0;
 
         }
 
@@ -153,7 +153,7 @@ namespace EncryptionDiary.API.Repository
             cmd.Parameters.AddWithValue("description", NpgsqlDbType.Varchar, key.Description != null ? (object)key.Description : DBNull.Value);
             cmd.Parameters.AddWithValue("shared", NpgsqlDbType.Boolean, key.Shared != null ? (object)key.Shared : DBNull.Value);
 
-            cmd.Parameters.AddWithValue("updated", NpgsqlDbType.TimestampTz, key.Updated != null ? (object)key.Updated : DBNull.Value);
+            cmd.Parameters.AddWithValue("updated", NpgsqlDbType.TimestampTz, key.Updated != null ? key.Updated : DateTime.UtcNow);
 
 
             cmd.Connection = conn;

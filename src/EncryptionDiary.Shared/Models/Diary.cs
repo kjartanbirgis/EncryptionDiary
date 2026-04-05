@@ -16,7 +16,7 @@ namespace EncryptionDiary.Shared.Models
         public byte[]? DiaryTag { get; set; }
         public byte[]? DiaryNonce { get; set; }
 
-        public DateTime Created { get; set; }
+        public DateTime? Created { get; set; }
         public DateTime? Updated { get; set; }
         public DateTime? Deleted { get; set; }
     }
