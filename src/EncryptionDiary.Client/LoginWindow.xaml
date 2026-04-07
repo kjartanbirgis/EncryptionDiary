@@ -19,8 +19,11 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <TextBlock Grid.Row="0" Grid.Column="0" Text="Server URL:" VerticalAlignment="Center" Margin="0,5"/>
-        <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtServerUrl" Margin="0,5"/>
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="Server:" VerticalAlignment="Center" Margin="0,5"/>
+        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Margin="0,5">
+            <ComboBox x:Name="cmbServers" Width="200" SelectionChanged="cmbServers_SelectionChanged"/>
+            <TextBox x:Name="txtServerUrl" Width="100" Margin="5,0,0,0"/>
+        </StackPanel>
 
         <TextBlock Grid.Row="1" Grid.Column="0" Text="Username:" VerticalAlignment="Center" Margin="0,5"/>
         <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtUsername" Margin="0,5"/>

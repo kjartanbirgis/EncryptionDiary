@@ -49,7 +49,12 @@ namespace EncryptionDiary.API.Controllers
                 return BadRequest();
             }
             var userResponse = new UserResponse(tempresponse);
-            return Ok(new { Token = _tokenService.GenerateToken(userResponse.ID, userResponse.Username), User = userResponse });
+            var loginResponse = new LoginResponse()
+            {
+                Token = _tokenService.GenerateToken(userResponse.ID, userResponse.Username),
+                User = userResponse
+            };
+            return Ok(loginResponse);
         }
         [HttpPost("login")]
         public async Task<IActionResult> LoginUser(AuthUser user)
@@ -74,7 +79,12 @@ namespace EncryptionDiary.API.Controllers
             if (!CryptographicOperations.FixedTimeEquals(hash,tempUser.PasswordHash)) {
                 return Unauthorized();
             }
-            return Ok(new { Token = _tokenService.GenerateToken(tempUser.ID, tempUser.Username), User = new UserResponse(tempUser) });
+            var loginResponse = new LoginResponse()
+            {
+                Token = _tokenService.GenerateToken(tempUser.ID, tempUser.Username),
+                User = new UserResponse(tempUser)
+            };
+            return Ok(loginResponse);
         }
 
     }

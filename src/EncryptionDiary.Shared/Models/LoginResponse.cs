@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace EncryptionDiary.Shared.Models
 {
-    public class ServerConnection
+    public class LoginResponse
     {
-        public string Name { get; set; }
-        public string Url { get; set; }
-        public string Username { get; set; }
+        public string Token { get; set; }
+        public UserResponse User { get; set; }
     }
 }

@@ -8,6 +8,8 @@ namespace EncryptionDiary.Shared.Models
 {
     public class UserResponse
     {
+        public UserResponse() { }
+
         public UserResponse(User user)
         {
             ID = user.ID;
