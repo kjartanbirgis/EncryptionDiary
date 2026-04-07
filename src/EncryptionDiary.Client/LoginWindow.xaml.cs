@@ -1,0 +1,57 @@
+﻿using EncryptionDiary.Client.Services;
+using EncryptionDiary.Shared.Helper;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
+
+namespace EncryptionDiary.Client
+{
+    /// <summary>
+    /// Interaction logic for LoginWindow.xaml
+    /// </summary>
+    public partial class LoginWindow : Window
+    {
+        public LoginWindow()
+        {
+            InitializeComponent();
+        }
+
+
+            private async void btnLogin_Click(object sender, RoutedEventArgs e)
+        {
+            var serverUrl = txtServerUrl.Text;
+            var username = txtUsername.Text;
+            var password = txtPassword.Password;
+
+            var clientHash = PasswordHelper.ClientHash(password, username);
+            var api = new ApiService(serverUrl);
+
+            if (await api.Login(username, clientHash))
+            {
+                var mainWindow = new MainWindow();
+                mainWindow.Show();
+                this.Close();
+            }
+            else
+            {
+                MessageBox.Show("Login failed");
+            }
+
+        }
+
+        private void btnRegister_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+    }
+}

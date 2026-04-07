@@ -1,0 +1,36 @@
+﻿<Window x:Class="EncryptionDiary.Client.LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:EncryptionDiary.Client"
+        mc:Ignorable="d"
+        Title="Encryption Diary - Login" Height="300" Width="400">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="Server URL:" VerticalAlignment="Center" Margin="0,5"/>
+        <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtServerUrl" Margin="0,5"/>
+
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="Username:" VerticalAlignment="Center" Margin="0,5"/>
+        <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtUsername" Margin="0,5"/>
+
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="Password:" VerticalAlignment="Center" Margin="0,5"/>
+        <PasswordBox Grid.Row="2" Grid.Column="1" x:Name="txtPassword" Margin="0,5"/>
+
+        <StackPanel Grid.Row="4" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,15">
+            <Button Content="Login" x:Name="btnLogin" Width="100" Margin="5" Click="btnLogin_Click"/>
+            <Button Content="Register" x:Name="btnRegister" Width="100" Margin="5" Click="btnRegister_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>
