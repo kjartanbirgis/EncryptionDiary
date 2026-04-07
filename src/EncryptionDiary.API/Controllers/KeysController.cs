@@ -1,6 +1,7 @@
 ﻿using EncryptionDiary.API.Repository;
 using EncryptionDiary.Shared.Helper;
 using EncryptionDiary.Shared.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Npgsql.Replication.PgOutput.Messages;
@@ -8,6 +9,7 @@ using System.Security.Cryptography;
 
 namespace EncryptionDiary.API.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class KeysController : Controller

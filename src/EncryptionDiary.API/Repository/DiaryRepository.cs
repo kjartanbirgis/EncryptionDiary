@@ -17,7 +17,7 @@ namespace EncryptionDiary.API.Repository
             await conn.OpenAsync();
             List<Diary> diaries = new List<Diary>();
             using var cmd = new NpgsqlCommand(
-                "SELECT id, user_id, enc_diary_data, diary_nonce, diary_tag, created, updated, deleted FROM keys WHERE user_id = @user_id",
+                "SELECT id, user_id, enc_diary_data, diary_nonce, diary_tag, created, updated, deleted FROM diary WHERE user_id = @user_id",
                 conn);
             cmd.Parameters.AddWithValue("user_id", userID);
             cmd.Connection = conn;

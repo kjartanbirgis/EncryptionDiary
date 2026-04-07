@@ -1,9 +1,11 @@
 ﻿using EncryptionDiary.API.Repository;
 using EncryptionDiary.Shared.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EncryptionDiary.API.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
 
