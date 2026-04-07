@@ -11,7 +11,7 @@ namespace EncryptionDiary.API.Repository
         {
         }
 
-        public async Task<List<Diary>> GetAllDiary(Guid userID)
+        public async Task<List<Diary>> GetAllDiaries(Guid userID)
         {
             using var conn = new NpgsqlConnection(_connectionString);
             await conn.OpenAsync();
@@ -43,7 +43,7 @@ namespace EncryptionDiary.API.Repository
         }
        
         //þurfum að passa að eyða assests á undan 
-        public async Task SoftDeleteDiary(Guid diaryID)
+        public async Task<bool> SoftDeleteDiaryByID(Guid diaryID)
         {
 
             using var connn = new NpgsqlConnection(_connectionString);
@@ -57,7 +57,8 @@ namespace EncryptionDiary.API.Repository
             cmd.Connection = connn;
             cmd.Parameters.AddWithValue("id", diaryID);
             cmd.Parameters.AddWithValue("deleted", DateTime.UtcNow);
-            await cmd.ExecuteNonQueryAsync();
+            var result = await cmd.ExecuteNonQueryAsync();
+            return result < 0;
         }
         public async Task<Diary?> InsertDiary(Diary diary)
         {
@@ -86,7 +87,7 @@ namespace EncryptionDiary.API.Repository
             return await GetDiaryByID((Guid)keyID);
         }
         
-        public async Task<Diary?> ModifyDiary(Diary diary)
+        public async Task<Diary?> ModifyDiaryByID(Diary diary)
         {
             if (diary == null || diary.ID == null ) { return null; }
             using var conn = new NpgsqlConnection(_connectionString);

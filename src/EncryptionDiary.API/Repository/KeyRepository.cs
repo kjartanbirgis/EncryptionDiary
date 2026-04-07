@@ -34,11 +34,11 @@ namespace EncryptionDiary.API.Repository
                 {
                     ID = reader.GetGuid(0),
                     UserID = reader.GetGuid(1),
-                    EncKey = (byte[])reader[2],
-                    KeyNonce = (byte[])reader[3],
-                    KeyTag = (byte[])reader[4],
+                    EncKey = reader.IsDBNull(2)?null:(byte[])reader[2],
+                    KeyNonce = reader.IsDBNull(3)?null:(byte[])reader[3],
+                    KeyTag = reader.IsDBNull(4) ? null : (byte[])reader[4],
                     Description = reader.GetString(5),
-                    Shared = reader.IsDBNull(6)? null: reader.GetBoolean(6),
+                    Shared = reader.GetBoolean(6),
                     Created = reader.GetDateTime(7),
                     Updated = reader.GetDateTime(8),
                     Deleted = reader.IsDBNull(9) ? null : reader.GetDateTime(9)
@@ -95,11 +95,11 @@ namespace EncryptionDiary.API.Repository
                 return new Key
                 {
                     ID = reader.GetGuid(0),
-                    EncKey = (byte[])reader[1],
-                    KeyNonce = (byte[])reader[2],
-                    KeyTag = (byte[])reader[3],
+                    EncKey = reader.IsDBNull(1) ? null : (byte[])reader[1],
+                    KeyNonce = reader.IsDBNull(2) ? null : (byte[])reader[2],
+                    KeyTag = reader.IsDBNull(3) ? null : (byte[])reader[3],
                     Description = reader.GetString(4),
-                    Shared = reader.IsDBNull(5) ? null : reader.GetBoolean(5),
+                    Shared = reader.GetBoolean(5),
                     Created = reader.GetDateTime(6),
                     Updated = reader.GetDateTime(7),
                     Deleted = reader.IsDBNull(8) ? null : reader.GetDateTime(8)
@@ -117,8 +117,6 @@ namespace EncryptionDiary.API.Repository
                                                     "enc_key = null, " +
                                                     "key_nonce = null, " +
                                                     "key_tag = null," +
-                                                    "description =  null, " +
-                                                    "shared = null, " +
                                                     "deleted = @deleted "+
                                                 "where id = @id");
             cmd.Connection = connn;
@@ -140,7 +138,7 @@ namespace EncryptionDiary.API.Repository
                                                     "key_tag = @key_tag," +
                                                     "description =  @description, " +
                                                     "shared = @shared," +
-                                                    "updated = @updated" +
+                                                    "updated = @updated " +
                                                 "where id = @id");
 
             cmd.Parameters.Clear();
@@ -151,7 +149,7 @@ namespace EncryptionDiary.API.Repository
             cmd.Parameters.AddWithValue("key_tag", NpgsqlDbType.Bytea, key.KeyTag != null ? (object)key.KeyTag : DBNull.Value);
 
             cmd.Parameters.AddWithValue("description", NpgsqlDbType.Varchar, key.Description != null ? (object)key.Description : DBNull.Value);
-            cmd.Parameters.AddWithValue("shared", NpgsqlDbType.Boolean, key.Shared != null ? (object)key.Shared : DBNull.Value);
+            cmd.Parameters.AddWithValue("shared", NpgsqlDbType.Boolean, key.Shared );
 
             cmd.Parameters.AddWithValue("updated", NpgsqlDbType.TimestampTz, key.Updated != null ? key.Updated : DateTime.UtcNow);
 
