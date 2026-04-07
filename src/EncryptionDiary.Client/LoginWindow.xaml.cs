@@ -33,12 +33,13 @@ namespace EncryptionDiary.Client
             var username = txtUsername.Text;
             var password = txtPassword.Password;
 
-            var clientHash = PasswordHelper.ClientHash(password, username);
+            var clientAuthHash = PasswordHelper.ClientAuthHash(password, username);
+            var clientEncHash = PasswordHelper.ClientEncHash(password, username);
             var api = new ApiService(serverUrl);
 
-            if (await api.Login(username, clientHash))
+            if (await api.Login(username, clientAuthHash))
             {
-                var mainWindow = new MainWindow();
+                var mainWindow = new MainWindow(username, clientEncHash, api);
                 mainWindow.Show();
                 this.Close();
             }
@@ -49,9 +50,26 @@ namespace EncryptionDiary.Client
 
         }
 
-        private void btnRegister_Click(object sender, RoutedEventArgs e)
+        private async void btnRegister_Click(object sender, RoutedEventArgs e)
         {
+            var serverUrl = txtServerUrl.Text;
+            var username = txtUsername.Text;
+            var password = txtPassword.Password;
 
+            var clientAuthHash = PasswordHelper.ClientAuthHash(password, username);
+            var clientEncHash = PasswordHelper.ClientEncHash(password, username);
+            var api = new ApiService(serverUrl);
+
+            if (await api.Register(username, clientAuthHash))
+            {
+                var mainWindow = new MainWindow(username, clientEncHash, api);
+                mainWindow.Show();
+                this.Close();
+            }
+            else
+            {
+                MessageBox.Show("Registration failed");
+            }
         }
     }
 }
