@@ -9,6 +9,16 @@ namespace EncryptionDiary.Shared.Helper
 {
     public static class PasswordHelper
     {
+        public static byte[] ClientHash(string password, string username)
+        {
+            var PasswordBytes = Encoding.UTF8.GetBytes(password);
+            var usernameBytes = Encoding.UTF8.GetBytes(username);
+
+
+            using var pbkdf2 = new Rfc2898DeriveBytes(PasswordBytes, usernameBytes, 100_000, HashAlgorithmName.SHA256);
+            return pbkdf2.GetBytes(32); //32 is for SHA256 (8*32 = 256)
+        }
+
         public static byte[] GenerateSalt(int size = 32)
         {
             return RandomNumberGenerator.GetBytes(size);
