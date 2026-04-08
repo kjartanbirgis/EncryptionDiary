@@ -6,7 +6,20 @@
         xmlns:local="clr-namespace:EncryptionDiary.Client"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="File">
+                <MenuItem Header="Logout" Click="mnuLogout_Click"/>
+                <MenuItem Header="Exit" Click="mnuExit_Click" />
+            </MenuItem>
+            <MenuItem Header="Tools">
+                <MenuItem Header="Key Management" Click="mnuKeyManagement_Click"/>
+                <MenuItem Header="Add Server" Click="mnuAddServer_Click"/>
+            </MenuItem>
+            <MenuItem Header="Sync">
+                <MenuItem Header="Sync Now" Click="mnuSync_Click"/>
+            </MenuItem>
+        </Menu>
 
-    </Grid>
+    </DockPanel>
 </Window>

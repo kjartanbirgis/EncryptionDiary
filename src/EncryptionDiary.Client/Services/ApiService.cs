@@ -1,9 +1,13 @@
 ﻿using EncryptionDiary.Shared.Models;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -50,6 +54,23 @@ namespace EncryptionDiary.Client.Services
             var result = await response.Content.ReadFromJsonAsync<LoginResponse>();
             SetToken(result.Token);
             return result.User;
+        }
+
+        public async Task<Key?> InsertKey(Key key)
+        {
+            var response = await _httpClient.PostAsJsonAsync("/api/Keys/", key);
+            if (!response.IsSuccessStatusCode)
+            {
+                return null;
+            }
+            var result = await response.Content.ReadFromJsonAsync<Key>();
+            return result;
+        }
+
+        internal async Task<List<Key>> GetAllKeys(Guid userID)
+        {
+            var response = await _httpClient.GetFromJsonAsync<List<Key>>($"/api/Keys/all?userId={userID}");
+            return response ?? new List<Key>();
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using EncryptionDiary.Client.Services;
+using EncryptionDiary.Client.Windows;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -19,13 +20,42 @@ namespace EncryptionDiary.Client
     {
         private Services.ApiService _apiService = null;
         private byte[] _hashEncPassword = null;
-        private string _username;
-        public MainWindow( string username, byte[] hashEncPassword,  ApiService apiService)
+        private Guid _userID;
+        public MainWindow( Guid userID, byte[] hashEncPassword,  ApiService apiService)
         {
             InitializeComponent();
             _hashEncPassword = hashEncPassword;
-            _username = username;
+            _userID = userID;
             _apiService = apiService;
         }
+
+        private void mnuKeyManagement_Click(object sender, RoutedEventArgs e)
+        {
+            var keyWindow = new KeyManagementWindow(_userID,_hashEncPassword,_apiService);
+            keyWindow.ShowDialog();
+        }
+
+        private void mnuLogout_Click(object sender, RoutedEventArgs e)
+        {
+            var login = new LoginWindow();
+            login.Show();
+            this.Close();
+        }
+
+        private void mnuExit_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
+
+        private void mnuAddServer_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO
+        }
+
+        private void mnuSync_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO
+        }
+
     }
 }

@@ -73,10 +73,11 @@ namespace EncryptionDiary.Client
             var clientEncHash = PasswordHelper.ClientEncHash(password, username);
             var api = new ApiService(serverUrl);
 
-            if (await api.Login(username, clientAuthHash)!=null)
+            var response = await api.Login(username, clientAuthHash);
+            if (response!=null)
             {
                 CheckSavedURL(serverUrl, username, serverUrl);
-                var mainWindow = new MainWindow(username, clientEncHash, api);
+                var mainWindow = new MainWindow(response.ID, clientEncHash, api);
                 mainWindow.Show();
                 this.Close();
             }
@@ -109,11 +110,11 @@ namespace EncryptionDiary.Client
             var clientAuthHash = PasswordHelper.ClientAuthHash(password, username);
             var clientEncHash = PasswordHelper.ClientEncHash(password, username);
             var api = new ApiService(serverUrl);
-
-            if (await api.Register(username, clientAuthHash)!=null)
+            var registerResponse = await api.Register(username, clientAuthHash);
+            if (registerResponse != null)
             {
                 CheckSavedURL(serverUrl, username, serverUrl);
-                var mainWindow = new MainWindow(username, clientEncHash, api);
+                var mainWindow = new MainWindow(registerResponse.ID, clientEncHash, api);
                 mainWindow.Show();
                 this.Close();
 

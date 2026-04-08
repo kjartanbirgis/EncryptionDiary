@@ -1,0 +1,55 @@
+﻿<Window x:Class="EncryptionDiary.Client.Windows.KeyManagementWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Key Management" Height="450" Width="500"
+        WindowStartupLocation="CenterScreen">
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="Key Size:" VerticalAlignment="Center" Margin="0,5"/>
+        <ComboBox Grid.Row="0" Grid.Column="1" x:Name="cmbKeySize" Margin="0,5">
+            <ComboBoxItem Content="128 - bit" Tag="16"/>
+            <ComboBoxItem Content="192 - bit" Tag="24"/>
+            <ComboBoxItem Content="256 - bit" Tag="32" IsSelected="True"/>
+        </ComboBox>
+
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="Description:" VerticalAlignment="Center" Margin="0,5"/>
+        <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtDescription" Margin="0,5"/>
+
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="Store on:" VerticalAlignment="Center" Margin="0,5"/>
+        <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" Margin="0,5">
+            <RadioButton x:Name="rbServer" Content="Server (encrypted)" IsChecked="True" Margin="0,0,15,0"/>
+            <RadioButton x:Name="rbLocal" Content="Local only (HSM sim)"/>
+        </StackPanel>
+
+        <Button Grid.Row="3" Grid.ColumnSpan="2" Content="Generate Key" x:Name="btnGenerate" 
+                Margin="0,10" Padding="10,5" Click="btnGenerate_Click"/>
+
+        <ListView Grid.Row="4" Grid.ColumnSpan="2" x:Name="lstKeys" Margin="0,10">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Shared" Width="60" DisplayMemberBinding="{Binding Shared}"/>
+                    <GridViewColumn Header="Description" Width="150" DisplayMemberBinding="{Binding Description}"/>
+                    <GridViewColumn Header="Size" Width="80" DisplayMemberBinding="{Binding KeySize}"/>
+                    <GridViewColumn Header="Storage" Width="100" DisplayMemberBinding="{Binding Storage}"/>
+                    <GridViewColumn Header="Created" Width="120" DisplayMemberBinding="{Binding Created}"/>
+
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+        <Button Grid.Row="5" Grid.ColumnSpan="2" Content="Delete Selected Key" x:Name="btnDelete"
+                Margin="0,5" Padding="10,5" Click="btnDelete_Click"/>
+    </Grid>
+</Window>
