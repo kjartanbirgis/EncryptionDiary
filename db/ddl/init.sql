@@ -17,6 +17,8 @@ create table keys(
 	key_tag bytea ,
 	description text,
 	shared bool not null default false,
+	key_size int not null,
+	local bool not null default true,
 	
 	created Timestamptz not null default now(),
 	updated timestamptz not null default now(),
