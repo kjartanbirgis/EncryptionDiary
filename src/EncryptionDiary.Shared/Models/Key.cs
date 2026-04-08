@@ -14,7 +14,7 @@ namespace EncryptionDiary.Shared.Models
         public byte[]? EncKey { get; set; }
         public byte[]? KeyNonce { get; set; }
         public byte[]? KeyTag { get; set; }
-        public int? KeySize { get; set; }
+        public int KeySize { get; set; }
         public bool Local { get; set; }
         
         public string? Description { get; set; } //hum þetta ætti kanski ekki að vera í gagnagrunninum heldur í clientinum???

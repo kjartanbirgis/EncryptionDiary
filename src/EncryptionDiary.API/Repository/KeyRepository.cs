@@ -22,7 +22,7 @@ namespace EncryptionDiary.API.Repository
             await conn.OpenAsync();
             List<Key> keys = new List<Key>();
             using var cmd = new NpgsqlCommand(
-                "SELECT id, user_id, enc_key, key_nonce, key_tag, description, shared, created, updated, deleted FROM keys WHERE user_id = @user_id",
+                "SELECT id, user_id, enc_key, key_nonce, key_tag, description, shared, created, updated, deleted,key_size,local FROM keys WHERE user_id = @user_id",
                 conn);
             cmd.Parameters.AddWithValue("user_id", userID);
             cmd.Connection = conn;
@@ -41,7 +41,9 @@ namespace EncryptionDiary.API.Repository
                     Shared = reader.GetBoolean(6),
                     Created = reader.GetDateTime(7),
                     Updated = reader.GetDateTime(8),
-                    Deleted = reader.IsDBNull(9) ? null : reader.GetDateTime(9)
+                    Deleted = reader.IsDBNull(9) ? null : reader.GetDateTime(9),
+                    KeySize = reader.GetInt32(10),
+                    Local = reader.GetBoolean(11)  
                 };
                 keys.Add(tmpkey);
             }
@@ -52,8 +54,8 @@ namespace EncryptionDiary.API.Repository
         {
             using var conn = new NpgsqlConnection(_connectionString);
             await conn.OpenAsync();
-            using var cmd = new NpgsqlCommand("insert into keys(id,user_id,enc_key,key_nonce,key_tag,description,shared,created,updated,deleted) "+
-                                                "values(@id, @user_id, @enc_key, @key_nonce, @key_tag, @description, @shared, @created, @updated, @deleted) returning id");
+            using var cmd = new NpgsqlCommand("insert into keys(id,user_id,enc_key,key_nonce,key_tag,description,shared,created,updated,deleted,key_size,local) "+
+                                                "values(@id, @user_id, @enc_key, @key_nonce, @key_tag, @description, @shared, @created, @updated, @deleted,@key_size,@local) returning id");
             cmd.Parameters.Clear();
             cmd.Parameters.AddWithValue("id", NpgsqlDbType.Uuid, key.ID != null ? key.ID : Guid.NewGuid());
             cmd.Parameters.AddWithValue("user_id", key.UserID);
@@ -68,6 +70,8 @@ namespace EncryptionDiary.API.Repository
             cmd.Parameters.AddWithValue("created", NpgsqlDbType.TimestampTz, key.Created != null ? key.Created : DateTime.UtcNow);
             cmd.Parameters.AddWithValue("updated", NpgsqlDbType.TimestampTz, key.Updated != null ? key.Updated : DateTime.UtcNow);
             cmd.Parameters.AddWithValue("deleted", NpgsqlDbType.TimestampTz, key.Deleted != null ? (object)key.Deleted : DBNull.Value);
+            cmd.Parameters.AddWithValue("key_size", key.KeySize);
+            cmd.Parameters.AddWithValue("local", key.Local);
 
             cmd.Connection = conn;
             var keyID = await cmd.ExecuteScalarAsync();
@@ -84,7 +88,7 @@ namespace EncryptionDiary.API.Repository
             await conn.OpenAsync();
             List<Key> keys = new List<Key>();
             using var cmd = new NpgsqlCommand(
-                "SELECT id, enc_key, key_nonce, key_tag, description, shared, created, updated, deleted FROM keys WHERE id = @id",
+                "SELECT id, enc_key, key_nonce, key_tag, description, shared, created, updated, deleted,key_size,local FROM keys WHERE id = @id",
                 conn);
             cmd.Parameters.AddWithValue("id", keyID);
             cmd.Connection = conn;
@@ -102,7 +106,9 @@ namespace EncryptionDiary.API.Repository
                     Shared = reader.GetBoolean(5),
                     Created = reader.GetDateTime(6),
                     Updated = reader.GetDateTime(7),
-                    Deleted = reader.IsDBNull(8) ? null : reader.GetDateTime(8)
+                    Deleted = reader.IsDBNull(8) ? null : reader.GetDateTime(8),
+                    KeySize = reader.GetInt32(9),
+                    Local = reader.GetBoolean(10)
                 };
             }
             return null;
@@ -139,6 +145,8 @@ namespace EncryptionDiary.API.Repository
                                                     "description =  @description, " +
                                                     "shared = @shared," +
                                                     "updated = @updated " +
+                                                    "key_size = @keysize "+ 
+                                                    "local = @local " +
                                                 "where id = @id");
 
             cmd.Parameters.Clear();
@@ -152,6 +160,9 @@ namespace EncryptionDiary.API.Repository
             cmd.Parameters.AddWithValue("shared", NpgsqlDbType.Boolean, key.Shared );
 
             cmd.Parameters.AddWithValue("updated", NpgsqlDbType.TimestampTz, key.Updated != null ? key.Updated : DateTime.UtcNow);
+
+            cmd.Parameters.AddWithValue("key_size", key.KeySize);
+            cmd.Parameters.AddWithValue("local", key.Local);
 
 
             cmd.Connection = conn;
