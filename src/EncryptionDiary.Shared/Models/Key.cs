@@ -24,6 +24,8 @@ namespace EncryptionDiary.Shared.Models
         public DateTime? Updated { get; set; }
         public DateTime? Deleted { get; set; }
 
+        public string StorageDisplay => Local ? "HSM" : "Server";
+
 
     }
 }
