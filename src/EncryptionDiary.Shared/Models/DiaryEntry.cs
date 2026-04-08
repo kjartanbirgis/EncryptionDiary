@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EncryptionDiary.Shared.Models
 {
-    internal class DiaryEntry
+    public class DiaryEntry
     {
         public Guid? ID { get; set; }
         public Guid? KeyID { get; set; }
