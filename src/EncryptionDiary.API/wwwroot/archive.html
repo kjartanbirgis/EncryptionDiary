@@ -1,0 +1,38 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Archiving Diary</title>
+</head>
+<body>
+    <h2>Archive Diary</h2>
+    <label>Key ID:</label><br />
+    <input type="text" id="keyID" style="width: 400px;"/><br /><br />
+
+    <label>Shares (one per line):</label><br />
+    <textarea id="shares" rows="10" cols="100"></textarea><br /><br />
+
+    <button onclick="submitArchive()">Submit</button>
+
+    <div id="result"></div>
+
+    <script>async function submitArchive() {
+            var keyID = document.getElementById('keyID').value;
+            var sharesText = document.getElementById('shares').value;
+            var shares = sharesText.split('\n').filter(s => s.trim() !== '');
+
+            var response = await fetch('/api/Archive', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ keyID: keyID, shares: shares })
+            });
+
+            if (response.ok) {
+                var data = await response.json();
+                document.getElementById('result').innerText = JSON.stringify(data, null, 2);
+            } else {
+                document.getElementById('result').innerText = 'Error: ' + response.status;
+            }
+        }</script>
+</body>
+</html>

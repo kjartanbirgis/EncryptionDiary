@@ -43,6 +43,7 @@ builder.Services.AddScoped<UserRepository>(provider => new UserRepository(connec
 builder.Services.AddScoped<KeyRepository>(provider => new KeyRepository(connectionString));
 builder.Services.AddScoped<DiaryRepository>(provider => new DiaryRepository(connectionString));
 
+
 //JWT stillingar
 var jwtSecret = builder.Configuration["Jwt:Secret"];
 var key = Encoding.UTF8.GetBytes(jwtSecret);
@@ -75,6 +76,8 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseStaticFiles();
 
 app.MapControllers();
 

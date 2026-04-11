@@ -158,5 +158,37 @@ namespace EncryptionDiary.API.Repository
             }
             return null;
         }
+
+        public async Task<List<Diary>> GetAllDiariesByKeyID(Guid keyID)
+        {
+            using var conn = new NpgsqlConnection(_connectionString);
+            await conn.OpenAsync();
+            List<Diary> diaries = new List<Diary>();
+            using var cmd = new NpgsqlCommand(
+                "SELECT id, user_id, key_id, enc_diary_data, diary_nonce, diary_tag, created, updated, deleted FROM diary WHERE key_id = @key_id and deleted is null", 
+                conn); //erum ekki að taka þar sem notandinn hefur eytt færslum.
+            cmd.Parameters.AddWithValue("key_id",keyID);
+            cmd.Connection = conn;
+
+            using var reader = await cmd.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                var tmpDiary = new Diary
+                {
+                    ID = reader.GetGuid(0),
+                    UserID = reader.GetGuid(1),
+                    KeyID = reader.GetGuid(2),
+                    EncDiaryData = (byte[])reader[3],
+                    DiaryNonce = (byte[])reader[4],
+                    DiaryTag = (byte[])reader[5],
+
+                    Created = reader.GetDateTime(6),
+                    Updated = reader.GetDateTime(7),
+                    Deleted = reader.IsDBNull(8) ? null : reader.GetDateTime(8)
+                };
+                diaries.Add(tmpDiary);
+            }
+            return diaries;
+        }
     }
 }
