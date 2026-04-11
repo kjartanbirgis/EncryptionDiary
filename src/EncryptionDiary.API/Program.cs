@@ -72,7 +72,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection(); //nginx á að sjá um þetta
 
 app.UseAuthentication();
 app.UseAuthorization();

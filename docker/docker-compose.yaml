@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: diary
+      POSTGRES_PASSWORD: diary_password
+      POSTGRES_DB: diary
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../db/ddl/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5433:5432"
+    profiles:
+      - with-db
+
+
+
+  api:
+    build:
+      context: ../src
+      dockerfile: EncryptionDiary.API/Dockerfile
+
+    environment:
+      ConnectionStrings__DiaryDb: "${DB_CONNECTION:-Host=db;Port=5432;Database=diary;Username=diary;Password=diary_password}"
+      Jwt__Secret: "${JWT_SECRET:-change-this-to-a-long-random-secret-key}"
+      Jwt__Issuer: "EncryptionDiary"
+      Jwt__ExpirationMinutes: "30"
+      PasswordSettings__Iterations: "1400000"
+      PasswordSettings__Pepper: "${PEPPER:-change-this-pepper}"
+    ports:
+      - "5123:8080"
+    depends_on:
+      db:
+        condition: service_started
+        required: false
+
+volumes:
+  postgres_data:

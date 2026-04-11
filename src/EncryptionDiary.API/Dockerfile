@@ -5,17 +5,18 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 USER $APP_UID
 WORKDIR /app
 EXPOSE 8080
-EXPOSE 8081
+#EXPOSE 8081 #notar https???
 
 
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["src/EncryptionDiary.API/EncryptionDiary.API.csproj", "src/EncryptionDiary.API/"]
-RUN dotnet restore "./src/EncryptionDiary.API/EncryptionDiary.API.csproj"
+COPY ["EncryptionDiary.API/EncryptionDiary.API.csproj", "EncryptionDiary.API/"]
+COPY ["EncryptionDiary.Shared/EncryptionDiary.Shared.csproj", "EncryptionDiary.Shared/"]
+RUN dotnet restore "./EncryptionDiary.API/EncryptionDiary.API.csproj"
 COPY . .
-WORKDIR "/src/src/EncryptionDiary.API"
+WORKDIR "/src/EncryptionDiary.API"
 RUN dotnet build "./EncryptionDiary.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
