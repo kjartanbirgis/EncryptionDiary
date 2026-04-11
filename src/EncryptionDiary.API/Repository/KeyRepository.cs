@@ -171,7 +171,30 @@ namespace EncryptionDiary.API.Repository
             return await GetKeyByID(key.ID.Value);
         }
 
+        internal async Task<bool> MarkAsShared(Guid keyID)
+        {
+
+            using var conn = new NpgsqlConnection(_connectionString);
+            await conn.OpenAsync();
+            using var cmd = new NpgsqlCommand("update keys set " +
+                                                    "shared = @shared," +
+                                                    "updated = @updated " +
+                                                "where id = @id");
+
+            cmd.Parameters.Clear();
+            cmd.Parameters.AddWithValue("id", NpgsqlDbType.Uuid, keyID);
 
 
+            cmd.Parameters.AddWithValue("shared", NpgsqlDbType.Boolean, true);
+
+            cmd.Parameters.AddWithValue("updated", NpgsqlDbType.TimestampTz,  DateTime.UtcNow);
+
+
+
+            cmd.Connection = conn;
+            var rows = await cmd.ExecuteNonQueryAsync();
+
+            return rows > 0;
+        }
     }
 }

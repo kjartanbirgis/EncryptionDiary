@@ -20,6 +20,59 @@
                 <MenuItem Header="Sync Now" Click="mnuSync_Click"/>
             </MenuItem>
         </Menu>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="250"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
 
+            <!-- Left panel - diary entry list -->
+            <DockPanel Grid.Column="0">
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="5">
+                    <Button Content="New Entry" x:Name="btnNewEntry" Click="btnNewEntry_Click" Padding="5,3" Margin="0,0,5,0"/>
+                    <Button Content="Delete" x:Name="btnDeleteEntry" Click="btnDeleteEntry_Click" Padding="5,3"/>
+                </StackPanel>
+                <ListView x:Name="lstEntries" Margin="5" SelectionChanged="lstEntries_SelectionChanged" GridViewColumnHeader.Click="lstEntries_HeaderClick">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Title" Width="120" DisplayMemberBinding="{Binding Title}"/>
+                            <GridViewColumn Header="Date" Width="100" DisplayMemberBinding="{Binding EntryDate}"/>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </DockPanel>
+
+            <!-- Right panel - diary entry content -->
+            <DockPanel Grid.Column="1" Margin="5">
+                <Grid DockPanel.Dock="Top" Margin="0,0,0,5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="60"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Title:" VerticalAlignment="Center" Margin="0,3"/>
+                    <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtTitle" Margin="0,3"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Date:" VerticalAlignment="Center" Margin="0,3"/>
+                    <DatePicker Grid.Row="1" Grid.Column="1" x:Name="dpEntryDate" Margin="0,3"/>
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Key:" VerticalAlignment="Center" Margin="0,3"/>
+                    <ComboBox Grid.Row="2" Grid.Column="1" x:Name="cmbKeys" DisplayMemberPath="Description" Margin="0,3"/>
+                </Grid>
+
+                <DockPanel DockPanel.Dock="Bottom" Margin="0,5,0,0">
+                    <Button Content="Save Entry" x:Name="btnSave" Click="btnSave_Click" Padding="10,5" DockPanel.Dock="Right"/>
+                    <Button Content="Add Attachment" x:Name="btnAttachment" Click="btnAttachment_Click" Padding="10,5" DockPanel.Dock="Right" Margin="0,0,5,0"/>
+                </DockPanel>
+
+                <TextBox x:Name="txtContent" AcceptsReturn="True" AcceptsTab="True" 
+                     VerticalScrollBarVisibility="Auto" TextWrapping="Wrap"/>
+            </DockPanel>
+        </Grid>
     </DockPanel>
 </Window>

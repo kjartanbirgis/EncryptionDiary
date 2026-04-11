@@ -20,30 +20,30 @@ namespace EncryptionDiary.API.Controllers
         }
 
         [HttpGet("all")]
-        public async Task<IActionResult> RetreveKeys(Guid userID)
+        public async Task<IActionResult> RetreveDaries(Guid userID)
         {
             return Ok(await _diaryRepository.GetAllDiaries(userID));
         }
 
         [HttpGet("{diaryID}")]
-        public async Task<IActionResult> GetKeys(Guid keyID)
+        public async Task<IActionResult> GetDiary(Guid keyID)
         {
             return Ok(await _diaryRepository.GetDiaryByID(keyID));
         }
 
         [HttpPost]
-        public async Task<IActionResult> InsertKey([FromBody] Diary diaryData)
+        public async Task<IActionResult> InsertDiary([FromBody] Diary diaryData)
         {
             return Ok(await _diaryRepository.InsertDiary(diaryData));
         }
 
         [HttpPut]
-        public async Task<IActionResult> ModifyKey([FromBody] Diary diaryData)
+        public async Task<IActionResult> ModifyDiary([FromBody] Diary diaryData)
         {
             return Ok(await _diaryRepository.ModifyDiaryByID(diaryData));
         }
         [HttpDelete("{diaryID}")]
-        public async Task<IActionResult> DeleteKey(Guid diaryID)
+        public async Task<IActionResult> DeleteDiary(Guid diaryID)
         {
             var returnValue = await _diaryRepository.SoftDeleteDiaryByID(diaryID);
             return returnValue ? Ok() : NotFound();

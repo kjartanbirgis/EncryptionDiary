@@ -1,0 +1,26 @@
+﻿<Window x:Class="EncryptionDiary.Client.Windows.ShamirWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:EncryptionDiary.Client.Windows"
+        mc:Ignorable="d"
+        Title="ShamirWindow" Height="450" Width="800">
+    <Grid>
+        <TextBox x:Name="txtKeyDescription" HorizontalAlignment="Left" Margin="85,66,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="220" Height="23" IsEnabled="False"/>
+        <Label Content="Number of Shares (n)" HorizontalAlignment="Left" Margin="85,124,0,0" VerticalAlignment="Top"/>
+        <Label Content="Number of threshold (k)" HorizontalAlignment="Left" Margin="279,124,0,0" VerticalAlignment="Top" Width="156"/>
+        <TextBox x:Name="txtShares" HorizontalAlignment="Left" Margin="87,155,0,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" Width="120" PreviewTextInput="NumberOnly"/>
+        <TextBox x:Name="txtThreshold" HorizontalAlignment="Left" Margin="280,155,0,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" Width="120" PreviewTextInput="NumberOnly"/>
+        <Button Content="Generate shares" HorizontalAlignment="Left" Margin="295,259,0,0" VerticalAlignment="Top" x:Name="btnGenerate" Click="btnGenerate_Click"  />
+        <ListView x:Name="lstKeys" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="485,39,65,110">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <Button Content="Save to file" HorizontalAlignment="Left" Margin="495,339,0,0" VerticalAlignment="Top" x:Name="btnSave" Click="btnSave_Click"/>
+        <Button Content="Print" HorizontalAlignment="Left" Margin="600,339,0,0" VerticalAlignment="Top" IsEnabled="False" />
+    </Grid>
+</Window>

@@ -4,6 +4,7 @@ using EncryptionDiary.Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Printing;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -25,13 +26,15 @@ namespace EncryptionDiary.Client.Windows
         private Guid _userID;
         private byte[] _hashEncPassword;
         private ApiService _apiService;
+        private string _username;
 
-        public KeyManagementWindow(Guid userID, byte[] hashEncPassword, ApiService apiService)
+        public KeyManagementWindow(Guid userID, byte[] hashEncPassword, ApiService apiService, string username)
         {
             InitializeComponent();
             _userID = userID;
             _hashEncPassword = hashEncPassword;
             _apiService = apiService;
+            _username = username;
             LoadKeys();
 
         }
@@ -79,6 +82,20 @@ namespace EncryptionDiary.Client.Windows
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void btnShamir_Click(object sender, RoutedEventArgs e)
+        {
+            if (lstKeys.SelectedItem is Shared.Models.Key selectedKey)
+            {
+                var shamirWindow = new ShamirWindow(selectedKey, _hashEncPassword,_username,_apiService);
+                shamirWindow.ShowDialog();
+                LoadKeys(); // refresh in case shared flag changed
+            }
+            else
+            {
+                MessageBox.Show("Select a key first.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
         }
     }
 }

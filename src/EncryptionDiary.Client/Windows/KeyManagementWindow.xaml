@@ -42,7 +42,7 @@
                     <GridViewColumn Header="Shared" Width="60" DisplayMemberBinding="{Binding Shared}"/>
                     <GridViewColumn Header="Description" Width="150" DisplayMemberBinding="{Binding Description}"/>
                     <GridViewColumn Header="Size" Width="80" DisplayMemberBinding="{Binding KeySize}"/>
-                    <GridViewColumn Header="Storage" Width="100" DisplayMemberBinding="{Binding Storage}"/>
+                    <GridViewColumn Header="Storage" Width="100" DisplayMemberBinding="{Binding StorageDisplay}"/>
                     <GridViewColumn Header="Created" Width="120" DisplayMemberBinding="{Binding Created}"/>
 
                 </GridView>
@@ -50,6 +50,7 @@
         </ListView>
 
         <Button Grid.Row="5" Grid.ColumnSpan="2" Content="Delete Selected Key" x:Name="btnDelete"
-                Margin="0,5" Padding="10,5" Click="btnDelete_Click"/>
+                Margin="0,5,260,5" Padding="10,5" Click="btnDelete_Click"/>
+        <Button Grid.Row="5" Grid.Column="1" Content="Create Shares (SSSS)" x:Name="btnShamir" Click="btnShamir_Click" Padding="10,5" Margin="135,5,0,5"/>
     </Grid>
 </Window>

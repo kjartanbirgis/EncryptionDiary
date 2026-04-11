@@ -72,5 +72,48 @@ namespace EncryptionDiary.Client.Services
             var response = await _httpClient.GetFromJsonAsync<List<Key>>($"/api/Keys/all?userId={userID}");
             return response ?? new List<Key>();
         }
+
+        internal async Task<List<Diary>> GetAllDiaries(Guid userID)
+        {
+            var response = await _httpClient.GetFromJsonAsync<List<Diary>>($"/api/Diaries/all?UserID={userID}");
+            return response ?? new List<Diary>();
+        }
+        internal async Task<bool> InsertDiary(Diary diary)
+        {
+            var response = await _httpClient.PostAsJsonAsync($"/api/Diaries/",diary);
+            if (!response.IsSuccessStatusCode)
+            {
+                return false;
+            }
+            return true;
+        }
+        internal async Task<bool> UpdateDiary(Diary diary)
+        {
+            var response = await _httpClient.PutAsJsonAsync($"/api/Diaries/", diary);
+            if (!response.IsSuccessStatusCode)
+            {
+                return false;
+            }
+            return true;
+        }
+        internal async Task<bool> DeleteDiary(Guid diaryID)
+        {
+            var response = await _httpClient.DeleteAsync($"/api/Diaries/{diaryID}");
+            if (!response.IsSuccessStatusCode)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        internal async Task<bool> MarkAsShared(Guid keyID)
+        {
+            var response = await _httpClient.PutAsync($"/api/Keys/share/{keyID}",null);
+            if (!response.IsSuccessStatusCode)
+            {
+                return false;
+            }
+            return true;
+        }
     }
 }

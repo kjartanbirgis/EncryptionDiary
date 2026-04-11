@@ -77,7 +77,7 @@ namespace EncryptionDiary.Client
             if (response!=null)
             {
                 CheckSavedURL(serverUrl, username, serverUrl);
-                var mainWindow = new MainWindow(response.ID, clientEncHash, api);
+                var mainWindow = new MainWindow(response.ID, clientEncHash, api,username);
                 mainWindow.Show();
                 this.Close();
             }
@@ -114,7 +114,7 @@ namespace EncryptionDiary.Client
             if (registerResponse != null)
             {
                 CheckSavedURL(serverUrl, username, serverUrl);
-                var mainWindow = new MainWindow(registerResponse.ID, clientEncHash, api);
+                var mainWindow = new MainWindow(registerResponse.ID, clientEncHash, api,username);
                 mainWindow.Show();
                 this.Close();
 

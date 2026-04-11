@@ -51,6 +51,13 @@ namespace EncryptionDiary.API.Controllers
             return returnValue ? Ok() : NotFound();
 
         }
+        [HttpPut("share/{keyID}")]
+        public async Task<IActionResult> MarkedShare(Guid keyID)
+        {
+            var result = await _keyRepository.MarkAsShared(keyID);
+            if (!result) return NotFound();
+            return Ok();
+        }
 
     }
 }
