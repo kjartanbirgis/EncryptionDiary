@@ -14,7 +14,7 @@
             </MenuItem>
             <MenuItem Header="Tools">
                 <MenuItem Header="Key Management" Click="mnuKeyManagement_Click"/>
-                <MenuItem Header="Add Server" Click="mnuAddServer_Click"/>
+                <MenuItem Header="Manage Servers" Click="mnuAddServer_Click"/>
             </MenuItem>
             <MenuItem Header="Sync">
                 <MenuItem Header="Sync Now" Click="mnuSync_Click"/>

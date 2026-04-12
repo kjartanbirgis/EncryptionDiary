@@ -34,13 +34,16 @@ namespace EncryptionDiary.Client
         private Guid _userID;
         private DiaryEntry _entry = new DiaryEntry();
         private string _username;
-        public MainWindow( Guid userID, byte[] hashEncPassword,  ApiService apiService, string username)
+        private byte[] _authHash;
+
+        public MainWindow( Guid userID, byte[] hashEncPassword,  ApiService apiService, string username, byte[] authHash)
         {
             InitializeComponent();
             _hashEncPassword = hashEncPassword;
             _userID = userID;
             _apiService = apiService;
             _username = username;
+            _authHash = authHash;
             LoadKeys();
             LoadDiaries();
         }
@@ -66,7 +69,8 @@ namespace EncryptionDiary.Client
 
         private void mnuAddServer_Click(object sender, RoutedEventArgs e)
         {
-            // TODO
+            var ServerManagement = new ServerManagementWindow(_authHash);
+            ServerManagement.ShowDialog();
         }
 
         private void mnuSync_Click(object sender, RoutedEventArgs e)
