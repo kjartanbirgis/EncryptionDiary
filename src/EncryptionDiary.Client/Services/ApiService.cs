@@ -20,6 +20,7 @@ namespace EncryptionDiary.Client.Services
 
         public ApiService(string serverUrl)
         {
+            //could add specific CA to harden MITM attack. similar like CA.certification in linux.
             _httpClient = new HttpClient();
             _httpClient.BaseAddress = new Uri(serverUrl);
         }
