@@ -69,7 +69,7 @@ namespace EncryptionDiary.Client
 
         private void mnuAddServer_Click(object sender, RoutedEventArgs e)
         {
-            var ServerManagement = new ServerManagementWindow(_authHash);
+            var ServerManagement = new ServerManagementWindow(_authHash,_apiService);
             ServerManagement.ShowDialog();
         }
 

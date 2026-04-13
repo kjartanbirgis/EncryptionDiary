@@ -22,15 +22,17 @@ namespace EncryptionDiary.Client.Windows
     public partial class ServerManagementWindow : Window
     {
         private readonly ServerConfigService _configService;
+        private ApiService _apiService;
         private Dictionary<string, ServerConnection> _servers;
         private readonly byte[] _authHash;
 
-        public ServerManagementWindow(byte[] authHash)
+        public ServerManagementWindow(byte[] authHash, ApiService apiService)
         {
             InitializeComponent();
             _authHash = authHash;
             _configService = new ServerConfigService();
             LoadServers();
+            _apiService = apiService;
         }
         private void LoadServers()
         {
@@ -45,25 +47,46 @@ namespace EncryptionDiary.Client.Windows
             var username = txtUsername.Text;
 
             if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(url) || string.IsNullOrEmpty(username) ||
-                string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(url) || string.IsNullOrWhiteSpace(username) )
+                string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(url) || string.IsNullOrWhiteSpace(username))
             {
-                MessageBox.Show("Please fill in all fields.","Error",MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Please fill in all fields.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
             }
             if (_servers.ContainsKey(name))
             {
-                MessageBox.Show("Server already exist","Warning",MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Server already exist", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
             }
             //register User to the Database
+            var result = _apiService.Register(username, _authHash);
+            if (result == null)
+            {
+                MessageBox.Show("Couldnot register user to the server", "error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            //Hugsanlega meiri check!!!
+            _servers[url] = new ServerConnection { Name = name, 
+                Url = url, 
+                Username = username 
+            };    
+            _configService.Save(_servers);
+            txtName.Clear();
+            txtUrl.Clear();
+            txtUsername.Clear();
+
+
 
         }
 
         private void btnRemove_Click(object sender, RoutedEventArgs e)
         {
+            //Spurning um að hard eyða öllum gögnum af servernum.!!
 
         }
 
         private void btnTest_Click(object sender, RoutedEventArgs e)
         {
+            //opna tengingar við alla serverana.
 
         }
     }
