@@ -9,6 +9,7 @@ namespace EncryptionDiary.Shared.Models
 {
     public class AuthUser
     {
+        public Guid? ID { get; set; }
         [Required]
         public string Username { get; set; }
         
