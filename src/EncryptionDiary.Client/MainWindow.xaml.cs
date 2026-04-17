@@ -71,6 +71,8 @@ namespace EncryptionDiary.Client
         {
             var ServerManagement = new ServerManagementWindow(_authHash,_apiService,_userID);
             ServerManagement.ShowDialog();
+            LoadKeys();
+            LoadDiaries();
         }
 
         private void mnuSync_Click(object sender, RoutedEventArgs e)

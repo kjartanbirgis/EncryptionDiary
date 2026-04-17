@@ -83,7 +83,7 @@ namespace EncryptionDiary.Client
             }
             else
             {
-                MessageBox.Show("Login failed");
+                MessageBox.Show(this,"Login failed");
             }
 
         }
@@ -121,7 +121,7 @@ namespace EncryptionDiary.Client
             }
             else
             {
-                MessageBox.Show("Registration failed");
+                MessageBox.Show(this,"Registration failed");
             }
         }
     }
