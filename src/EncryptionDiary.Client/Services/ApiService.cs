@@ -67,7 +67,15 @@ namespace EncryptionDiary.Client.Services
             var result = await response.Content.ReadFromJsonAsync<Key>();
             return result;
         }
-
+        internal async Task<bool> UpdateKey(Key key)
+        {
+            var response = await _httpClient.PutAsJsonAsync($"/api/Keys/", key);
+            if (!response.IsSuccessStatusCode)
+            {
+                return false;
+            }
+            return true;
+        }
         internal async Task<List<Key>> GetAllKeys(Guid userID)
         {
             var response = await _httpClient.GetFromJsonAsync<List<Key>>($"/api/Keys/all?userId={userID}");
@@ -116,5 +124,7 @@ namespace EncryptionDiary.Client.Services
             }
             return true;
         }
+
+
     }
 }

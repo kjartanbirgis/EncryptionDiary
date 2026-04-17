@@ -49,7 +49,7 @@
                     Width="100" Margin="5" Padding="5,3"/>
             <Button Content="Remove Server" x:Name="btnRemove" Click="btnRemove_Click" 
                     Width="100" Margin="5" Padding="5,3"/>
-            <Button Content="Test Connection" x:Name="btnTest" Click="btnTest_Click" 
+            <Button Content="Sync" x:Name="btnSync" Click="btnSync_Click" 
                     Width="100" Margin="5" Padding="5,3"/>
         </StackPanel>
     </Grid>
