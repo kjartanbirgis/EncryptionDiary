@@ -37,12 +37,14 @@ namespace EncryptionDiary.API.Controllers
             var hash = PasswordHelper.HashPassword(user.ClientHash, salt, iteration, pepper);
 
             var registerUser = new User()
-            {
+            {   
+                ID = user.ID,
                 Username = user.Username,
                 PasswordHash= hash,
                 PasswordSalt= salt,
                 PasswordIteration= iteration
             };
+
             var tempresponse = await _userRepository.RegisterUser(registerUser);
             if (tempresponse == null)
             {
@@ -81,7 +83,7 @@ namespace EncryptionDiary.API.Controllers
             }
             var loginResponse = new LoginResponse()
             {
-                Token = _tokenService.GenerateToken(tempUser.ID, tempUser.Username),
+                Token = _tokenService.GenerateToken(tempUser.ID.Value, tempUser.Username),
                 User = new UserResponse(tempUser)
             };
             return Ok(loginResponse);

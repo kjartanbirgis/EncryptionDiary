@@ -12,7 +12,7 @@ namespace EncryptionDiary.Shared.Models
 
         public UserResponse(User user)
         {
-            ID = user.ID;
+            ID = user.ID.Value;
             Username = user.Username;
             Created = user.Created;
             Updated = user.Updated;

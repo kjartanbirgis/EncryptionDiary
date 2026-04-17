@@ -8,7 +8,7 @@ namespace EncryptionDiary.Shared.Models
 {
     public class User
     {
-        public Guid ID { get; set; }
+        public Guid? ID { get; set; }
         public string Username { get; set; }
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }  

@@ -25,14 +25,16 @@ namespace EncryptionDiary.Client.Windows
         private ApiService _apiService;
         private Dictionary<string, ServerConnection> _servers;
         private readonly byte[] _authHash;
+        private Guid _userID;
 
-        public ServerManagementWindow(byte[] authHash, ApiService apiService)
+        public ServerManagementWindow(byte[] authHash, ApiService apiService,Guid userID)
         {
             InitializeComponent();
             _authHash = authHash;
             _configService = new ServerConfigService();
             LoadServers();
             _apiService = apiService;
+            _userID = userID;
         }
         private void LoadServers()
         {
@@ -58,7 +60,8 @@ namespace EncryptionDiary.Client.Windows
                 return;
             }
             //register User to the Database
-            var result = _apiService.Register(username, _authHash);
+            ApiService registerService = new ApiService(url);
+            var result = registerService.Register(username, _authHash,_userID);
             if (result == null)
             {
                 MessageBox.Show("Couldnot register user to the server", "error", MessageBoxButton.OK, MessageBoxImage.Error);

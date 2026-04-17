@@ -44,9 +44,9 @@ namespace EncryptionDiary.Client.Services
             return result.User;
         }
 
-        public async Task<UserResponse> Register(string username, byte[] clientHash)
+        public async Task<UserResponse> Register(string username, byte[] clientHash, Guid? iD = null)
         {
-            var request = new { Username = username, ClientHash = Convert.ToBase64String(clientHash) };
+            var request = new { Username = username, ClientHash = Convert.ToBase64String(clientHash),ID  = iD };
             var response = await _httpClient.PostAsJsonAsync("/api/Users/register", request);
             if (!response.IsSuccessStatusCode)
             {

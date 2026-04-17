@@ -41,17 +41,24 @@ namespace EncryptionDiary.API.Repository
 
         public async Task<User?> RegisterUser(User user)
         {
-            using var conn = new NpgsqlConnection(_connectionString);
-            await conn.OpenAsync();
-            using var cmd = new NpgsqlCommand("insert into users(username,password_hash,pw_salt,pw_iter) values(@username,@password_hash,@pw_salt,@pw_iter)");
-            cmd.Parameters.Clear();
-            cmd.Parameters.AddWithValue("username", user.Username);
-            cmd.Parameters.AddWithValue("password_hash",user.PasswordHash);
-            cmd.Parameters.AddWithValue("pw_salt", user.PasswordSalt);
-            cmd.Parameters.AddWithValue("pw_iter",user.PasswordIteration);
-            cmd.Connection= conn;
-            await cmd.ExecuteNonQueryAsync();
-            
+            try
+            {
+                using var conn = new NpgsqlConnection(_connectionString);
+                await conn.OpenAsync();
+                using var cmd = new NpgsqlCommand("insert into users(username,password_hash,pw_salt,pw_iter,id) values(@username,@password_hash,@pw_salt,@pw_iter,@ID)");
+                cmd.Parameters.Clear();
+                cmd.Parameters.AddWithValue("username", user.Username);
+                cmd.Parameters.AddWithValue("password_hash", user.PasswordHash);
+                cmd.Parameters.AddWithValue("pw_salt", user.PasswordSalt);
+                cmd.Parameters.AddWithValue("pw_iter", user.PasswordIteration);
+                cmd.Parameters.AddWithValue("ID", NpgsqlTypes.NpgsqlDbType.Uuid, user.ID.HasValue ? user.ID.Value : Guid.NewGuid());
+                cmd.Connection = conn;
+                await cmd.ExecuteNonQueryAsync();
+            }
+            catch(Exception e)
+            {
+
+            }
             return await GetByUsername(user.Username);
 
         }
